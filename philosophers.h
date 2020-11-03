@@ -12,6 +12,8 @@
 
 
 #ifndef PHILOSOPHERS_PHILOSOPHERS_H
-#define PHILOSOPHERS_PHILOSOPHERS_H
+# define PHILOSOPHERS_PHILOSOPHERS_H
+
+# include <stdio.h>
 
 #endif
