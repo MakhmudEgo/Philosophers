@@ -3,4 +3,4 @@ project(Philosophers C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Philosophers philosophers.c philosophers.h)
+add_executable(Philosophers philosophers.c philosophers.h test.c)

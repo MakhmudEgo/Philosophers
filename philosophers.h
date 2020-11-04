@@ -13,7 +13,14 @@
 
 #ifndef PHILOSOPHERS_PHILOSOPHERS_H
 # define PHILOSOPHERS_PHILOSOPHERS_H
+# define SECOND 1000000
+# define MILLISECOND 1000
 
 # include <stdio.h>
+# include <unistd.h>
+# include <sys/time.h>
+
+typedef struct timeval t_day;
+typedef struct timezone t_zone;
 
 #endif
