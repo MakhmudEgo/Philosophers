@@ -1,26 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mizola <mizola@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/03 21:01:04 by mizola            #+#    #+#             */
-/*   Updated: 2020/11/03 21:01:13 by mizola           ###   ########.fr       */
+/*   Created: 2020/05/01 03:25:14 by mizola            #+#    #+#             */
+/*   Updated: 2020/05/02 05:24:27 by mizola           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "philosophers.h"
 
-#ifndef PHILOSOPHERS_PHILOSOPHERS_H
-# define PHILOSOPHERS_PHILOSOPHERS_H
-# define SECOND 1000000
-# define MILLISECOND 1000
+size_t		ft_strlen(const char *str)
+{
+	size_t index;
 
-# include <stdio.h>
-# include <unistd.h>
-# include <sys/time.h>
+	index = 0;
+	while (str[index] != '\0')
+		index++;
+	return (index);
+}
 
-typedef struct timeval t_day;
-typedef struct timezone t_zone;
+size_t		ft_strlen_null(const char *str)
+{
+	size_t index;
 
-#endif
+	index = 0;
+	while (str && str[index] != '\0')
+		index++;
+	return (index);
+}
