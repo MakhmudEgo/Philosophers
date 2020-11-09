@@ -15,6 +15,7 @@
 # define PHILOSOPHERS_PHILOSOPHERS_H
 # define SECOND 1000000
 # define MILLISECOND 1000
+# define PHS 3
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -23,18 +24,22 @@
 # include <pthread.h>
 # include <string.h>
 
+typedef struct			s_philo
+{
+	unsigned int		v_philos;
+	unsigned int		v_die;
+	unsigned int		v_eat;
+	unsigned int		v_sleep;
+	unsigned int		v_amount_eat;
+	pthread_mutex_t		**ptr_mutex;
+}						t_philo;
 
 typedef struct			s_args
 {
-	unsigned int		start;
-	unsigned int		id;
-	unsigned int		t_philos;
-	unsigned int		t_die;
-	unsigned int		t_eat;
-	unsigned int		t_sleep;
-	unsigned int		t_amount_eat;
-	pthread_t			*thread;
-	pthread_mutex_t		*mutex;
+	unsigned int		v_start;
+	unsigned int		v_id;
+	t_philo				*ptr_philo;
+	pthread_t			**ptr_threads;
 }						t_args;
 
 typedef struct timeval	t_day;
