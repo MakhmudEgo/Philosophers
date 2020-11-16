@@ -8,10 +8,7 @@ add_executable(Philosophers
         philo_one/philosophers.c
         philo_one/philosophers.h
         philo_one/ft_atoi.c
-        philo_one/ft_putnbr_fd.c
         philo_one/ft_strlen.c
         philo_one/ft_itoa.c
-
-#        test.c
-#        ggg.c
-        )
+        philo_one/ft_str_for_msg.c
+        philo_one/defines.h)

@@ -13,10 +13,8 @@
 
 #ifndef PHILOSOPHERS_PHILOSOPHERS_H
 # define PHILOSOPHERS_PHILOSOPHERS_H
-# define SECOND 1000000
-# define MILLISECOND 1000
-# define PHS 4
 
+# include "defines.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -31,7 +29,7 @@ typedef struct			s_philo
 	unsigned int		v_eat;
 	unsigned int		v_sleep;
 	unsigned int		v_stop;
-	unsigned long long	v_start;
+	size_t				v_start;
 	unsigned int		v_amount_eat;
 	pthread_mutex_t		**ptr_mutex;
 }						t_philo;
@@ -39,7 +37,9 @@ typedef struct			s_philo
 typedef struct			s_args
 {
 	unsigned int		v_philo_start;
-	unsigned int		v_id;
+	size_t				v_id;
+	size_t				v_last_eat;
+	size_t				v_last_sleep;
 	t_philo				*ptr_philo;
 	pthread_t			**ptr_threads;
 }						t_args;
@@ -47,7 +47,7 @@ typedef struct			s_args
 typedef struct timeval	t_day;
 typedef struct timezone	t_zone;
 int						ft_atoi(const char *str);
-void					ft_putnbr_fd(int n, int fd);
-char					*ft_itoa(int n);
-
+//char					*ft_itoa(size_t n);
+char					*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen);
+char					*ft_str_for_msg(size_t *v_id, char *s1, char *s2, size_t v_s2_len);
 #endif
