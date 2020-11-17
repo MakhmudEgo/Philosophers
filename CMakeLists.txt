@@ -11,4 +11,5 @@ add_executable(Philosophers
         philo_one/ft_strlen.c
         philo_one/ft_itoa.c
         philo_one/ft_str_for_msg.c
-        philo_one/defines.h)
+        philo_one/defines.h
+        philo_one/ft_join_3_ptr.c)

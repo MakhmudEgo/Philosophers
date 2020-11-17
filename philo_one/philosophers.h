@@ -47,7 +47,7 @@ typedef struct			s_args
 typedef struct timeval	t_day;
 typedef struct timezone	t_zone;
 int						ft_atoi(const char *str);
-//char					*ft_itoa(size_t n);
 char					*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen);
 char					*ft_str_for_msg(size_t *v_id, char *s1, char *s2, size_t v_s2_len);
+char					*ft_join_3_ptr(char *s1, const char *s2, char *s3, size_t len);
 #endif
