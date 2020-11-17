@@ -21,21 +21,30 @@ size_t	ft_gettime()
 	return (res);
 }
 
-int		ft_print(size_t v_id, char *v_str, size_t v_strlen)
+int		ft_print(size_t v_time_start, size_t v_id, char *v_str, size_t v_strlen)
 {
+	char *v_time_message;
 	char *v_message;
+	size_t v_time;
+	size_t v_len;
 
-	if (!(v_message = ft_str_for_msg(&v_id, 0x0, v_str, v_strlen))
-	|| write(1, v_message, v_id) == -1)
+	v_time = ft_gettime() - v_time_start;
+	if (!(v_time_message = ft_str_for_msg(&v_time, 0x0, 0x0, 0x0))
+	|| !(v_message = ft_str_for_msg(&v_id, 0x0, v_str, v_strlen)))
 		return (-1);
+	v_len = v_time + v_id;
+	if (!(v_message = ft_join_3_ptr(v_time_message, " ", v_message, v_len)) ||
+	(write(1, v_message, v_len) == -1))
+		return (-1);
+	free(v_message);
 	return (1);
 }
 
 void		ft_eat(t_args *ar)
 {
 	ar->v_last_eat = ft_gettime();
-	ft_print(ar->v_id, EAT_TXT, EAT_LEN);
-	sleep(ar->ptr_philo->v_eat * 1000);
+	ft_print(ar->ptr_philo->v_start, ar->v_id, EAT_TXT, EAT_LEN);
+	usleep(ar->ptr_philo->v_eat * 1000);
 //	return (1);
 }
 
@@ -55,22 +64,21 @@ void	*ft_start(void *args)
 			break ;
 		}
 		pthread_mutex_lock(ar->ptr_philo->ptr_mutex[l]);
-		ft_print(ar->v_id, FORK_TXT_L, FORK_LEN);
+		ft_print(ar->ptr_philo->v_start, ar->v_id, FORK_TXT_L, FORK_LEN);
 		pthread_mutex_lock(ar->ptr_philo->ptr_mutex[r]);
-		ft_print(ar->v_id, FORK_TXT_R, FORK_LEN);
+		ft_print(ar->ptr_philo->v_start, ar->v_id, FORK_TXT_R, FORK_LEN);
 		ft_eat(ar);
 
 		//eat
 		//slepp
 		//thinking
-/*		char *ss = ft_itoa(ft_gettime() - ar->ptr_philo->v_start, 0, 0);
-		write(1, ss, strlen(ss));
-		write(1, "\n", 1);*/
 		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[l]);
-		ft_print(ar->v_id, "v_l\n", 4);
+		ft_print(ar->ptr_philo->v_start, ar->v_id, "v_l\n", 4);
 		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[r]);
-		ft_print(ar->v_id, "v_r\n", 4);
-		usleep(10);
+		ft_print(ar->ptr_philo->v_start, ar->v_id, "v_r\n", 4);
+		ft_print(ar->ptr_philo->v_start, ar->v_id, SLEEP_TXT, SLEEP_LEN);
+		usleep(ar->ptr_philo->v_sleep * 1000);
+		ft_print(ar->ptr_philo->v_start, ar->v_id, THINK_TXT, THINK_LEN);
 	}
 	return (0x0);
 }
@@ -91,12 +99,11 @@ int		ft_pthreads_create(t_args **args, t_philo *arr_philos)
 {
 	unsigned int	i;
 	pthread_t		pit;
-//	pthread_t		pit_monitoring;
+	pthread_t		pit_monitoring;
 	pthread_t		**pits;
 
 	i = 0;
-
-//	pthread_create(&pit_monitoring, 0x0, ft_monitoring_status_philos, (void *) arr_philos);
+	pthread_create(&pit_monitoring, 0x0, ft_monitoring_status_philos, (void *) arr_philos);
 	pits = malloc(sizeof(pthread_t*) *arr_philos->v_philos);
 	while (i < arr_philos->v_philos)
 	{
@@ -109,18 +116,12 @@ int		ft_pthreads_create(t_args **args, t_philo *arr_philos)
 		i++;
 	}
 	i = 0;
-/*	while (i < arr_philos->v_philos)
-	{
-
-		i++;
-	}
-	i = 0;*/
 	while (i < arr_philos->v_philos)
 	{
 		pthread_create(&pit, 0x0, ft_start, (void *) args[i]);
 		pits[i] = &pit;
 		args[i]->ptr_threads = pits;
-//		usleep(100);
+		usleep(42);
 		i++;
 	}
 	ft_monitoring_status_philos((void *) arr_philos);
