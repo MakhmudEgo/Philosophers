@@ -26,10 +26,10 @@ char	*ft_str_for_msg(size_t *v_id, char *s1, char *s2, size_t v_s2_len)
 	str = (char*)malloc(*v_id);
 	if (str == NULL)
 		return (NULL);
-	while (s1[n] != '\0')
+	while (s1 && s1[n] != '\0')
 		str[i++] = s1[n++];
 	n = 0;
-	while (s2[n] != '\0')
+	while (s2 && s2[n] != '\0')
 		str[i++] = s2[n++];
 	str[i] = '\0';
 	free(s1);
