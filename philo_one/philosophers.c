@@ -17,7 +17,8 @@ size_t	ft_gettime()
 	t_day time;
 	size_t res;
 
-	gettimeofday(&time, 0x0);
+	if (gettimeofday(&time, 0x0) == -1)
+		return (0);
 	res = time.tv_sec * 1000 + time.tv_usec / 1000;
 	return (res);
 }
@@ -29,50 +30,58 @@ int		ft_print(t_args *ar, size_t v_id, char *v_str, size_t v_strlen)
 	size_t v_time;
 	size_t v_len;
 
-	if (!ar->ptr_philo->v_dead)
+	v_message = 0x0;
+	if (!(v_time = ft_gettime()))
+		return (1);
+	v_time -= ar->ptr_philo->v_start;
+	if (!(v_time_message = ft_str_for_msg(&v_time, 0x0, 0x0, 0x0))
+		|| !(v_message = ft_str_for_msg(&v_id, 0x0, v_str, v_strlen)))
 	{
-		v_time = ft_gettime() - ar->ptr_philo->v_start;
-		if (!(v_time_message = ft_str_for_msg(&v_time, 0x0, 0x0, 0x0))
-			|| !(v_message = ft_str_for_msg(&v_id, 0x0, v_str, v_strlen)))
-			return (-1);
-		v_len = v_time + v_id;
-		if (!(v_message = ft_join_3_ptr(v_time_message, " ", v_message, v_len)) ||
-			(!ar->ptr_philo->v_dead && write(1, v_message, v_len) == -1))
-			return (-1);
+		free(v_time_message);
 		free(v_message);
+		return (1);
 	}
-	return (1);
+	v_len = v_time + v_id;
+	if (!(v_message = ft_join_3_ptr(v_time_message, " ", v_message, v_len)) ||
+		(write(1, v_message, v_len) == -1))
+		return (1);
+	free(v_message);
+	return (0);
 }
 
 int		ft_eat(t_args *ar)
 {
-	ft_print(ar, ar->v_id, EAT_TXT, EAT_LEN);
+	if (ft_print(ar, ar->v_id, EAT_TXT, EAT_LEN))
+		return (1);
 	ar->v_last_eat = ft_gettime();
 	ar->v_finsh = ar->v_last_eat + ar->ptr_philo->v_die;
 	while (ft_gettime() <= ar->v_last_eat + ar->ptr_philo->v_eat)
 		usleep(100);
 	if (ar->ptr_philo->v_is_eat && ar->v_eaten)
 		ar->v_eaten--;
-	return (1);
+	return (0);
 }
 
 void	*ft_start(void *args)
 {
 	size_t l;
 	size_t r;
-	t_args *ar = (t_args *) args;
+	size_t time;
+	t_args *ar;
 
+	ar= (t_args *) args;
 	l = ar->v_id - 1;
 	r = ar->v_id == ar->ptr_philo->v_philos ? 0 : ar->v_id;
-	ar->v_last_eat = ft_gettime();
+	if (!(ar->v_last_eat = ft_gettime()))
+		return ((void *)1);
 	ar->v_finsh = ar->v_last_eat + ar->ptr_philo->v_die;
-	while (!(0x0))
+	while (!(ar->ptr_philo->v_dead))
 	{
-		if (ar->ptr_philo->v_stop || (ar->ptr_philo->v_is_eat && !ar->v_eaten))
+		if ((ar->ptr_philo->v_is_eat && !ar->v_eaten))
+			break ;
+		if (ar->ptr_philo->v_stop)
 		{
-			if (!ar->ptr_philo->v_dead && !(ar->ptr_philo->v_is_eat && !ar->v_eaten))
-				ft_print(ar, ar->v_id, DEAD_TXT, DEAD_LEN);
-			ar->ptr_philo->v_dead = 1;
+			ar->ptr_philo->v_dead = ar->v_id;
 			break ;
 		}
 		pthread_mutex_lock(ar->ptr_philo->ptr_mutex[l]);
@@ -80,13 +89,11 @@ void	*ft_start(void *args)
 		pthread_mutex_lock(ar->ptr_philo->ptr_mutex[r]);
 		ft_print(ar, ar->v_id, FORK_TXT_R, FORK_LEN);
 		ft_eat(ar);
-		if (!ar->ptr_philo->v_dead)
-			usleep(2000);
 		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[l]);
 		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[r]);
 		ft_print(ar, ar->v_id, SLEEP_TXT, SLEEP_LEN);
-		size_t timi = ft_gettime();
-		while (ft_gettime() <= timi + ar->ptr_philo->v_sleep)
+		time = ft_gettime();
+		while (ft_gettime() <= time + ar->ptr_philo->v_sleep)
 			usleep(100);
 		ft_print(ar, ar->v_id, THINK_TXT, THINK_LEN);
 	}
@@ -120,42 +127,58 @@ int		ft_pthreads_create(t_args **args, t_philo *arr_philos)
 	pthread_t		pit;
 	pthread_t		**pits;
 
-	i = 0;
-	pits = malloc(sizeof(pthread_t*) *arr_philos->v_philos);
-	while (i < arr_philos->v_philos)
+	i = -1;
+	while (++i < arr_philos->v_philos)
 	{
 		arr_philos->ptr_mutex[i] = malloc(sizeof(pthread_mutex_t));
-		pthread_mutex_init(arr_philos->ptr_mutex[i], NULL);
-		args[i] = malloc(sizeof(t_args) * arr_philos->v_philos);
+		if (pthread_mutex_init(arr_philos->ptr_mutex[i], NULL))
+		{
+			arr_philos->ptr_mutex[i] = 0x0;
+			return (1);
+		}
+	}
+	i = -1;
+	while (++i < arr_philos->v_philos)
+	{
+		if (!(args[i] = malloc(sizeof(t_args) * arr_philos->v_philos)))
+			return (1);
 		args[i]->ptr_philo = arr_philos;
 		args[i]->v_id = i + 1;
 		args[i]->v_last_eat = 0;
 		args[i]->v_finsh = 0;
 		args[i]->v_eaten = arr_philos->v_amount_eat;
-		i++;
 	}
 	i = -1;
-	arr_philos->v_start = ft_gettime();
+	if (!(arr_philos->v_start = ft_gettime()))
+		return (1);
+	if (!(pits = malloc(sizeof(pthread_t*) *arr_philos->v_philos)))
+		return (1);
 	while (++i < arr_philos->v_philos)
 	{
-		pthread_create(&pit, 0x0, ft_start, (void *) args[i]);
+		if (pthread_create(&pit, 0x0, ft_start, (void *) args[i]))
+		{
+			pits[i] = 0x0;
+			args[i]->ptr_threads = pits;
+			return (1);
+		}
 		pits[i] = &pit;
 		args[i]->ptr_threads = pits;
-		usleep(200);
+		usleep(49);
 	}
 	ft_monitoring_status_philos(args);
 	i = -1;
 	while (++i < arr_philos->v_philos)
-		pthread_join(*args[i]->ptr_threads[i], 0x0);
+	{
+		if (pthread_join(*args[i]->ptr_threads[i], 0x0))
+			return (1);
+	}
+	if (arr_philos->v_dead)
+		ft_print(args[0], arr_philos->v_dead, DEAD_TXT, DEAD_LEN);
 	return (0);
 }
 
-int		ft_init_args(char **argv)
+int		ft_init_args(char **argv, t_philo *arr_philos)
 {
-	t_args **arr_data;
-	t_philo *arr_philos;
-
-	arr_philos = malloc(sizeof(t_philo));
 	arr_philos->v_philos = ft_atoi(argv[1]); //PHS;
 	arr_philos->v_die = ft_atoi(argv[2]);
 	arr_philos->v_eat = ft_atoi(argv[3]);
@@ -165,22 +188,32 @@ int		ft_init_args(char **argv)
 	arr_philos->v_stop = 0x0;
 	arr_philos->v_start = 0x0;
 	arr_philos->v_dead = 0x0;
-	if (arr_philos->v_philos <= 0)
+	if ((arr_philos->v_philos <= 0) || !(arr_philos->ptr_mutex = malloc(sizeof(pthread_mutex_t *) * arr_philos->v_philos)))
 		return (1);
-	arr_data = malloc(sizeof(t_args *) * arr_philos->v_philos);
-	arr_philos->ptr_mutex = malloc(sizeof(pthread_mutex_t *) * arr_philos->v_philos);
-	ft_pthreads_create(arr_data, arr_philos);
 	return 0;
 }
 
 int		main(int argc, char **argv)
 {
+	t_args **arr_data;
+	t_philo *arr_philos;
 
-	if(argc < 5 || argc > 6 || ft_init_args(argv))
+	if(argc < 5 || argc > 6)
 	{
 		write(1, "bad args\n", 9);
 		return (1);
 	}
-
+	if ((arr_philos = malloc(sizeof(t_philo))))
+	{
+		if (ft_init_args(argv, arr_philos))
+			return (1);
+		if ((arr_data = malloc(sizeof(t_args *) * arr_philos->v_philos)))
+			ft_pthreads_create(arr_data, arr_philos);
+		else
+		{
+			free(arr_philos->ptr_mutex);
+			free(arr_philos);
+		}
+	}
 	return (0);
 }

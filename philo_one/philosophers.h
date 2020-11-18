@@ -45,7 +45,6 @@ typedef struct			s_args
 	t_philo				*ptr_philo;
 	pthread_t			**ptr_threads;
 }						t_args;
-
 typedef struct timeval	t_day;
 int						ft_atoi(const char *str);
 char					*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen);

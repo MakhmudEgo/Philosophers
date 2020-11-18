@@ -20,18 +20,18 @@ char	*ft_join_3_ptr(char *s1, const char *s2, char *s3, size_t len)
 
 	i = 0;
 	n = 0;
-	str = (char*)malloc(len);
-	if (str == NULL)
-		return (NULL);
-	while (s1 && s1[n] != '\0')
-		str[i++] = s1[n++];
-	n = 0;
-	while (s2 && s2[n] != '\0')
-		str[i++] = s2[n++];
-	n = 0;
-	while (s3 && s3[n] != '\0')
-		str[i++] = s3[n++];
-	str[i] = '\0';
+	if ((str = (char*)malloc(len)))
+	{
+		while (s1 && s1[n] != '\0')
+			str[i++] = s1[n++];
+		n = 0;
+		while (s2 && s2[n] != '\0')
+			str[i++] = s2[n++];
+		n = 0;
+		while (s3 && s3[n] != '\0')
+			str[i++] = s3[n++];
+		str[i] = '\0';
+	}
 	free(s1);
 	free(s3);
 	return (str);
