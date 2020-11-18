@@ -24,22 +24,24 @@
 
 typedef struct			s_philo
 {
-	unsigned int		v_philos;
-	unsigned int		v_die;
-	unsigned int		v_eat;
-	unsigned int		v_sleep;
-	unsigned int		v_stop;
+	size_t				v_philos;
+	size_t				v_die;
+	size_t				v_eat;
+	size_t				v_sleep;
+	size_t				v_stop;
 	size_t				v_start;
-	unsigned int		v_amount_eat;
+	size_t				v_dead;
+	size_t				v_amount_eat;
 	pthread_mutex_t		**ptr_mutex;
 }						t_philo;
 
 typedef struct			s_args
 {
-	unsigned int		v_philo_start;
+	size_t				v_philo_start;
 	size_t				v_id;
 	size_t				v_last_eat;
 	size_t				v_last_sleep;
+	size_t				v_finsh;
 	t_philo				*ptr_philo;
 	pthread_t			**ptr_threads;
 }						t_args;
