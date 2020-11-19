@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef PHILOSOPHERS_PHILOSOPHERS_H
 # define PHILOSOPHERS_PHILOSOPHERS_H
 
@@ -48,6 +47,14 @@ typedef struct			s_args
 typedef struct timeval	t_day;
 int						ft_atoi(const char *str);
 char					*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen);
-char					*ft_str_for_msg(size_t *v_id, char *s1, char *s2, size_t v_s2_len);
-char					*ft_join_3_ptr(char *s1, const char *s2, char *s3, size_t len);
+char					*ft_str_for_msg(size_t *v_id, char *s1,
+						const char *s2, size_t v_s2_len);
+char					*ft_join_3_ptr(char *s1, const char *s2,
+						char *s3, size_t len);
+void					*ft_start(void *args);
+int						ft_print(t_args *ar, size_t v_id,
+						char *v_str, size_t v_strlen);
+size_t					ft_gettime(void);
+int						ft_eat(t_args *ar);
+void					ft_monitoring_status_philos(t_args **args);
 #endif
