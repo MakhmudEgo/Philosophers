@@ -32,7 +32,7 @@ static size_t	num_len(size_t n)
 	return (i + 2);
 }
 
-static void	push_char(char *s, size_t n, size_t i)
+static void		push_char(char *s, size_t n, size_t i)
 {
 	size_t res;
 
@@ -45,7 +45,7 @@ static void	push_char(char *s, size_t n, size_t i)
 	}
 }
 
-char		*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen)
+char			*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen)
 {
 	char	*res;
 	size_t	i;
