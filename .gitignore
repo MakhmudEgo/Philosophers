@@ -6,3 +6,4 @@ a.out
 *.a
 **/.vscode
 **/test
+a.out.dSYM
