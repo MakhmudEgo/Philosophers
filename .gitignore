@@ -7,3 +7,5 @@ a.out
 **/.vscode
 **/test
 a.out.dSYM
+philo_one/philo_one
+philo_two/philo_two
