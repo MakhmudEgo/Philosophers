@@ -22,8 +22,10 @@ static int	ft_work(t_args *ar, size_t l, size_t r)
 	pthread_mutex_lock(ar->ptr_philo->ptr_mutex[r]);
 	if (ft_print(ar, ar->v_id, FORK_TXT_R, FORK_LEN) || ft_eat(ar))
 		return (1);
-	pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[l]);
-	pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[r]);
+	if (!ar->ptr_philo->v_dead)
+		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[l]);
+	if (!ar->ptr_philo->v_dead)
+		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[r]);
 	if (ft_print(ar, ar->v_id, SLEEP_TXT, SLEEP_LEN) || !(time = ft_gettime()))
 		return (1);
 	while (ft_gettime() <= time + ar->ptr_philo->v_sleep)
