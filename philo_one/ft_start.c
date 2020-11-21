@@ -22,6 +22,7 @@ static int	ft_work(t_args *ar, size_t l, size_t r)
 	pthread_mutex_lock(ar->ptr_philo->ptr_mutex[r]);
 	if (ft_print(ar, ar->v_id, FORK_TXT_R, FORK_LEN) || ft_eat(ar))
 		return (1);
+	ar->v_must_dead = ft_gettime();
 	if (!ar->ptr_philo->v_dead)
 		pthread_mutex_unlock(ar->ptr_philo->ptr_mutex[l]);
 	if (!ar->ptr_philo->v_dead)
@@ -44,16 +45,18 @@ void		*ft_start(void *args)
 	ar = (t_args *)args;
 	l = ar->v_id - 1;
 	r = ar->v_id == ar->ptr_philo->v_philos ? 0 : ar->v_id;
-	if (!(ar->v_last_eat = ft_gettime()))
+/*	if (!(ar->v_last_eat = ft_gettime()))
 		return ((void *)1);
-	ar->v_finsh = ar->v_last_eat + ar->ptr_philo->v_die;
-	while (!(ar->ptr_philo->v_dead))
+	ar->v_finsh = ar->v_last_eat + ar->ptr_philo->v_die;*/
+	if (ar->v_id % 2 == 0)
+		usleep(100);
+	while (!(0x0))
 	{
 		if ((ar->ptr_philo->v_is_eat && !ar->v_eaten))
 			break ;
 		if (ar->ptr_philo->v_stop)
 		{
-			ar->ptr_philo->v_dead = ar->v_id;
+//			ar->ptr_philo->v_dead = ar->v_id;
 			break ;
 		}
 		if (ft_work(ar, l, r))

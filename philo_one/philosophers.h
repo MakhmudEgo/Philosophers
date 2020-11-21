@@ -32,12 +32,14 @@ typedef struct			s_philo
 	size_t				v_is_eat;
 	size_t				v_amount_eat;
 	pthread_mutex_t		**ptr_mutex;
+	pthread_mutex_t		*ptr_mutex_write;
 }						t_philo;
 
 typedef struct			s_args
 {
 	size_t				v_id;
 	size_t				v_last_eat;
+	size_t				v_must_dead;
 	size_t				v_finsh;
 	size_t				v_eaten;
 	t_philo				*ptr_philo;
@@ -55,5 +57,5 @@ int						ft_print(t_args *ar, size_t v_id,
 						char *v_str, size_t v_strlen);
 size_t					ft_gettime(void);
 int						ft_eat(t_args *ar);
-void					ft_monitoring_status_philos(t_args **args);
+int					ft_monitoring_status_philos(t_args **args);
 #endif
