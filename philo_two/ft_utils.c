@@ -30,6 +30,7 @@ int		ft_print(t_args *ar, size_t v_id, char *v_str, size_t v_strlen)
 	size_t	v_time;
 	size_t	v_len;
 
+	sem_wait(ar->ptr_philo->v_mutex_print);
 	v_message = 0x0;
 	if (!(v_time = ft_gettime()))
 		return (1);
@@ -42,19 +43,20 @@ int		ft_print(t_args *ar, size_t v_id, char *v_str, size_t v_strlen)
 		return (1);
 	}
 	v_len = v_time + v_id;
-	if (!(v_message = ft_join_3_ptr(v_time_message, " ", v_message, v_len)) ||
-		(write(1, v_message, v_len) == -1))
+	if (!(v_message = ft_join_3_ptr(v_time_message, " ", v_message, v_len)))
 		return (1);
+	(!ar->ptr_philo->v_stop && v_strlen != DEAD_LEN) || (ar->ptr_philo->v_stop
+	&& v_strlen == DEAD_LEN) ? write(1, v_message, v_len) : 0;
 	free(v_message);
+	sem_post(ar->ptr_philo->v_mutex_print);
 	return (0);
 }
 
 int		ft_eat(t_args *ar)
 {
-	if (ft_print(ar, ar->v_id, EAT_TXT, EAT_LEN))
-		return (1);
 	ar->v_last_eat = ft_gettime();
-	ar->v_finsh = ar->v_last_eat + ar->ptr_philo->v_die;
+	if (!ar->ptr_philo->v_stop && ft_print(ar, ar->v_id, EAT_TXT, EAT_LEN))
+		return (1);
 	while (ft_gettime() <= ar->v_last_eat + ar->ptr_philo->v_eat)
 		usleep(100);
 	if (ar->ptr_philo->v_is_eat && ar->v_eaten)
@@ -62,18 +64,23 @@ int		ft_eat(t_args *ar)
 	return (0);
 }
 
-void	ft_monitoring_status_philos(t_args **args)
+int		ft_monitoring_status_philos(t_args **args)
 {
-	size_t i;
+	size_t		i;
+	long long	v_time_now;
 
 	while (!(0x0))
 	{
 		i = 0;
+		v_time_now = (long long)ft_gettime();
 		while (i < args[0]->ptr_philo->v_philos)
 		{
-			if (ft_gettime() >= args[i]->v_finsh)
+			if (((v_time_now - args[i]->v_last_eat)
+			> args[0]->ptr_philo->v_die))
 			{
-				args[0]->ptr_philo->v_stop = 1;
+				args[0]->ptr_philo->v_stop = i + 1;
+				if (!(args[0]->ptr_philo->v_is_eat && !args[i]->v_eaten))
+					args[0]->ptr_philo->v_dead = i + 1;
 				break ;
 			}
 			i++;
@@ -81,4 +88,5 @@ void	ft_monitoring_status_philos(t_args **args)
 		if (args[0]->ptr_philo->v_stop)
 			break ;
 	}
+	return (0);
 }

@@ -24,11 +24,13 @@ static int	ft_work(t_args *ar)
 		return (1);
 	sem_post(ar->ptr_philo->v_mutex);
 	sem_post(ar->ptr_philo->v_mutex);
-	if (ft_print(ar, ar->v_id, SLEEP_TXT, SLEEP_LEN) || !(time = ft_gettime()))
+	if (ft_print(ar, ar->v_id, SLEEP_TXT, SLEEP_LEN))
+		return (1);
+	if (!(time = ft_gettime()))
 		return (1);
 	while (ft_gettime() <= time + ar->ptr_philo->v_sleep)
 		usleep(100);
-	if (ft_print(ar, ar->v_id, THINK_TXT, THINK_LEN))
+	if (!ar->ptr_philo->v_stop && ft_print(ar, ar->v_id, THINK_TXT, THINK_LEN))
 		return (1);
 	return (0);
 }
@@ -38,20 +40,18 @@ void		*ft_start(void *args)
 	t_args *ar;
 
 	ar = (t_args *)args;
-	if (!(ar->v_last_eat = ft_gettime()))
-		return ((void *)1);
-	ar->v_finsh = ar->v_last_eat + ar->ptr_philo->v_die;
-	while (!(ar->ptr_philo->v_dead))
+	if (ar->v_id % 2 != 0)
+		usleep(100);
+	while (!(ar->ptr_philo->v_stop))
 	{
-		if ((ar->ptr_philo->v_is_eat && !ar->v_eaten))
-			break ;
-		if (ar->ptr_philo->v_stop)
+		if ((ar->ptr_philo->v_is_eat && !ar->v_eaten) || ar->ptr_philo->v_stop)
 		{
-			ar->ptr_philo->v_dead = ar->v_id;
+			ar->ptr_philo->v_stop = 13;
 			break ;
 		}
-		if (ft_work(ar))
+		if (!ar->ptr_philo->v_stop && ft_work(ar))
 			return ((void *)1);
 	}
-	return (0x0);
+	ar->v_finish = 13;
+	return ((void *)0);
 }

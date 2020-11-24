@@ -13,10 +13,6 @@
 #ifndef PHILOSOPHERS_DEFINES_H
 # define PHILOSOPHERS_DEFINES_H
 
-# define SECOND 1000000
-# define MILLISECOND 1000
-# define PHS 4
-# define SEMPHILO "/philo_two"
 # define SEMEAT "/sem_eating"
 # define SEMPRINT "/sem_print"
 

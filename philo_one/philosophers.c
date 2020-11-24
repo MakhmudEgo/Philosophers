@@ -17,7 +17,7 @@ int		ft_create_mutex(t_args **args, t_philo *arr_philos, size_t i)
 	arr_philos->ptr_mutex_write = malloc(sizeof(pthread_mutex_t));
 	if (pthread_mutex_init(arr_philos->ptr_mutex_write, NULL))
 		return (1);
-	while (++i < arr_philos->v_philos)
+	while (i < arr_philos->v_philos)
 	{
 		arr_philos->ptr_mutex[i] = malloc(sizeof(pthread_mutex_t));
 		if (pthread_mutex_init(arr_philos->ptr_mutex[i], NULL))
@@ -25,18 +25,18 @@ int		ft_create_mutex(t_args **args, t_philo *arr_philos, size_t i)
 			arr_philos->ptr_mutex[i] = 0x0;
 			return (1);
 		}
+		i++;
 	}
-	i = -1;
-	while (++i < arr_philos->v_philos)
+	i = 0;
+	while (i < arr_philos->v_philos)
 	{
 		if (!(args[i] = malloc(sizeof(t_args) * arr_philos->v_philos)))
 			return (1);
 		args[i]->ptr_philo = arr_philos;
 		args[i]->v_id = i + 1;
 		args[i]->v_last_eat = 0;
-		args[i]->v_finsh = 0;
-		args[i]->v_must_dead = 0;
-		args[i]->v_eaten = arr_philos->v_amount_eat;
+		args[i]->v_finish = 0;
+		args[i++]->v_eaten = arr_philos->v_amount_eat;
 	}
 	return (0);
 }
@@ -46,9 +46,10 @@ int		ft_pthreads_create(t_args **args, t_philo *arr_philos, size_t i)
 	pthread_t pit;
 	pthread_t **pits;
 
-	if (ft_create_mutex(args, arr_philos, -1)
+	args[arr_philos->v_philos] = 0x0;
+	if (ft_create_mutex(args, arr_philos, 0)
 	|| !(arr_philos->v_start = ft_gettime())
-	|| !(pits = malloc(sizeof(pthread_t *) * arr_philos->v_philos)))
+	|| !(pits = malloc(sizeof(pthread_t *) * (arr_philos->v_philos + 1))))
 		return (1);
 	i = -1;
 	while (++i < arr_philos->v_philos)
@@ -56,22 +57,15 @@ int		ft_pthreads_create(t_args **args, t_philo *arr_philos, size_t i)
 		args[i]->v_last_eat = arr_philos->v_start;
 		if (pthread_create(&pit, 0x0, ft_start, (void *)args[i]))
 		{
-			pits[i] = 0x0;
-			args[i]->ptr_threads = pits;
+			args[i]->ptr_threads = 0x0;
 			return (1);
 		}
 		pits[i] = &pit;
 		args[i]->ptr_threads = pits;
 	}
 	ft_monitoring_status_philos(args);
-	if (args[0]->ptr_philo->v_dead)
-	{
-		usleep(2000);
+	if (arr_philos->v_dead)
 		ft_print(args[0], args[0]->ptr_philo->v_dead, DEAD_TXT, DEAD_LEN);
-	}
-//	i = -1;
-/*	while (++i < arr_philos->v_philos)
-		pthread_join(*args[i]->ptr_threads[i], 0x0);*/
 	return (0);
 }
 
@@ -87,34 +81,9 @@ int		ft_init_args(char **argv, t_philo *arr_philos)
 	arr_philos->v_start = 0x0;
 	arr_philos->v_dead = 0x0;
 	if ((arr_philos->v_philos <= 0) || !(arr_philos->ptr_mutex =
-			malloc(sizeof(pthread_mutex_t *) * arr_philos->v_philos + 1)))
+			malloc(sizeof(pthread_mutex_t *) * (arr_philos->v_philos + 1))))
 		return (1);
-	return (0);
-}
-
-int		ft_free_xxx(t_args **arr_data, t_philo *arr_philos)
-{
-	size_t i;
-
-	i = -1;
-	while (++i < arr_philos->v_philos)
-	{
-		pthread_mutex_destroy(arr_philos->ptr_mutex[i]);
-		free(arr_philos->ptr_mutex[i]);
-	}
-	free(arr_philos->ptr_mutex);
-	i = -1;
-	if (arr_data)
-	{
-		free(arr_data[0]->ptr_threads);
-//		usleep(2000);
-		/*if (arr_philos->v_dead)
-			ft_print(arr_data[0], arr_philos->v_dead, DEAD_TXT, DEAD_LEN);*/
-		while (++i < arr_philos->v_philos)
-			free(arr_data[i]);
-	}
-	free(arr_philos);
-	free(arr_data);
+	arr_philos->ptr_mutex[arr_philos->v_philos] = 0x0;
 	return (0);
 }
 
@@ -131,7 +100,7 @@ int		main(int argc, char **argv)
 	if (!(arr_philos = malloc(sizeof(t_philo)))
 	|| ft_init_args(argv, arr_philos))
 		return (1);
-	if ((arr_data = malloc(sizeof(t_args *) * arr_philos->v_philos)))
+	if ((arr_data = malloc(sizeof(t_args *) * (arr_philos->v_philos + 1))))
 		ft_pthreads_create(arr_data, arr_philos, -1);
 	return (ft_free_xxx(arr_data, arr_philos));
 }

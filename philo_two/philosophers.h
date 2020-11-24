@@ -34,18 +34,21 @@ typedef struct			s_philo
 	size_t				v_is_eat;
 	size_t				v_amount_eat;
 	sem_t				*v_mutex;
+	sem_t				*v_mutex_print;
 }						t_philo;
 
 typedef struct			s_args
 {
 	size_t				v_id;
 	size_t				v_last_eat;
-	size_t				v_finsh;
+	size_t				v_finish;
 	size_t				v_eaten;
 	t_philo				*ptr_philo;
 	pthread_t			**ptr_threads;
 }						t_args;
+
 typedef struct timeval	t_day;
+
 int						ft_atoi(const char *str);
 char					*ft_itoa(size_t n, int v_sig, unsigned int *v_strlen);
 char					*ft_str_for_msg(size_t *v_id, char *s1,
@@ -57,5 +60,7 @@ int						ft_print(t_args *ar, size_t v_id,
 						char *v_str, size_t v_strlen);
 size_t					ft_gettime(void);
 int						ft_eat(t_args *ar);
-void					ft_monitoring_status_philos(t_args **args);
+int						ft_monitoring_status_philos(t_args **args);
+int						ft_free_xxx(t_args **arr_data, t_philo *arr_philos);
+
 #endif

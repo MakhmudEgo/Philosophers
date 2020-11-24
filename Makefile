@@ -11,11 +11,26 @@
 # **************************************************************************** #
 
 all:
-	rm -rfv philo_one/*.o
-	rm -rfv philo_one/philo_one
-	rm -rfv philo_two/*.o
-	rm -rfv philo_two/philo_two
-	rm -rfv philo_three/*.o
-	rm -rfv philo_three/philo_three
+	make	-C philo_one fclean
+	make	-C philo_two fclean
+	#make	-C philo_three fclean
+	rm		-rfv philo_one/philo_one.dSYM
+	rm		-rfv philo_two/philo_two.dSYM
+	#rm		-rfv philo_three/philo_three.dSYM
+	rm		-rfv 1
+	rm		-rfv 2
+	rm		-rfv 3
+
+1:
+	make	-C philo_one
+	mv		./philo_one/philo_one ./1
+
+2:
+	make	-C philo_two
+	mv		./philo_two/philo_two ./2
+
+3:
+	make	-C philo_three
+	mv		./philo_three/philo_three ./3
 
 .PHONY:		all
