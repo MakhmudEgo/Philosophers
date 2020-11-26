@@ -77,26 +77,6 @@ int		ft_init_args(char **argv, t_philo *arr_philos)
 	return (0);
 }
 
-/*int		ft_free_xxx(t_args **arr_data, t_philo *arr_philos)
-{
-	size_t i;
-
-	i = -1;
-	sem_close(arr_philos->v_mutex);
-	if (arr_data)
-	{
-		free(arr_data[0]->ptr_threads);
-		usleep(2000);
-		if (arr_philos->v_dead)
-			ft_print(arr_data[0], arr_philos->v_dead, DEAD_TXT, DEAD_LEN);
-		while (++i < arr_philos->v_philos)
-			free(arr_data[i]);
-	}
-	free(arr_philos);
-	free(arr_data);
-	return (0);
-}*/
-
 int		main(int argc, char **argv)
 {
 	t_args	**arr_data;
