@@ -15,7 +15,7 @@ NAME =	philo_three
 SRC =		ft_atoi.c ft_itoa.c philosophers.c ft_str_for_msg.c \
 			ft_join_3_ptr.c ft_start.c ft_utils.c ft_free_xxx.c
 
-FLAGS =		-Wall -Wextra -Werror
+#FLAGS =		-Wall -Wextra -Werror
 
 OSRC =		$(SRC:.c=.o)
 

@@ -30,11 +30,11 @@ int		ft_print(t_args *ar, size_t v_id, char *v_str, size_t v_strlen)
 	size_t	v_time;
 	size_t	v_len;
 
-	sem_wait(ar->ptr_philo->v_mutex_print);
+	sem_wait(g_dead);
 	v_message = 0x0;
 	if (!(v_time = ft_gettime()))
 		return (1);
-	v_time -= ar->ptr_philo->v_start;
+	v_time -= ar->v_start;
 	if (!(v_time_message = ft_str_for_msg(&v_time, 0x0, 0x0, 0x0))
 		|| !(v_message = ft_str_for_msg(&v_id, 0x0, v_str, v_strlen)))
 	{
@@ -45,48 +45,49 @@ int		ft_print(t_args *ar, size_t v_id, char *v_str, size_t v_strlen)
 	v_len = v_time + v_id;
 	if (!(v_message = ft_join_3_ptr(v_time_message, " ", v_message, v_len)))
 		return (1);
-	(!ar->ptr_philo->v_stop && v_strlen != DEAD_LEN) || (ar->ptr_philo->v_stop
-	&& v_strlen == DEAD_LEN) ? write(1, v_message, v_len) : 0;
+	write(1, v_message, v_len);
 	free(v_message);
-	sem_post(ar->ptr_philo->v_mutex_print);
+	if (v_strlen != DEAD_LEN)
+		sem_post(g_dead);
 	return (0);
 }
 
 int		ft_eat(t_args *ar)
 {
 	ar->v_last_eat = ft_gettime();
-	if (!ar->ptr_philo->v_stop && ft_print(ar, ar->v_id, EAT_TXT, EAT_LEN))
+	if (!ar->v_stop && ft_print(ar, ar->v_id, EAT_TXT, EAT_LEN))
 		return (1);
-	while (ft_gettime() <= ar->v_last_eat + ar->ptr_philo->v_eat)
-		usleep(100);
-	if (ar->ptr_philo->v_is_eat && ar->v_eaten)
+/*	while (ft_gettime() <= ar->v_last_eat + ar->v_eat)
+		usleep(100);*/
+	if (ar->v_is_eat && ar->v_eaten)
 		ar->v_eaten--;
 	return (0);
 }
 
-int		ft_monitoring_status_philos(t_args **args)
+void		*ft_monitoring_status_philos(void *args)
 {
-	size_t		i;
 	long long	v_time_now;
 
+	t_args *ar = (t_args *)args;
 	while (!(0x0))
 	{
-		i = 0;
+		usleep(21);
 		v_time_now = (long long)ft_gettime();
-		while (i < args[0]->ptr_philo->v_philos)
+		if (((v_time_now - ar->v_last_eat)
+			 > ar->v_die))
 		{
-			if (((v_time_now - args[i]->v_last_eat)
-			> args[0]->ptr_philo->v_die))
+			if (!(ar->v_is_eat && !ar->v_eaten))
 			{
-				args[0]->ptr_philo->v_stop = i + 1;
-				if (!(args[0]->ptr_philo->v_is_eat && !args[i]->v_eaten))
-					args[0]->ptr_philo->v_dead = i + 1;
-				break ;
+//				g_test = 13;
+				ft_print(ar, ar->v_id, DEAD_TXT, DEAD_LEN);
+				exit(13);
 			}
-			i++;
 		}
-		if (args[0]->ptr_philo->v_stop)
+		if (ar->v_is_eat && !ar->v_eaten)
+		{
+			ar->v_stop = 12;
 			break ;
+		}
 	}
-	return (0);
+	return (0x0);
 }

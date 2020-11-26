@@ -21,31 +21,35 @@
 # include <string.h>
 # include <semaphore.h>
 # include <sys/stat.h>
+#include <signal.h>
 
-typedef struct			s_philo
+sem_t *g_dead;
+
+typedef struct			s_main
 {
-	size_t				v_philos;
-	size_t				v_die;
-	size_t				v_eat;
-	size_t				v_sleep;
-	size_t				v_stop;
-	size_t				v_start;
-	size_t				v_dead;
-	size_t				v_is_eat;
-	size_t				v_amount_eat;
-	sem_t				*v_mutex;
-	sem_t				*v_mutex_print;
 	pid_t				*v_pids;
-}						t_philo;
+	size_t				v_philos;
+}						t_main;
+
 
 typedef struct			s_args
 {
-	size_t				v_id;
+	size_t				v_philos;
+	size_t				v_die;
+	size_t				v_sleep;
+	size_t				v_amount_eat;
+	size_t				v_is_eat;
+	size_t				v_stop;
+	size_t				v_start;
+	size_t				v_dead;
 	size_t				v_last_eat;
 	size_t				v_finish;
 	size_t				v_eaten;
-	t_philo				*ptr_philo;
-	pthread_t			**ptr_threads;
+	size_t				v_eat;
+	size_t				v_id;
+	pthread_t			v_pit;
+	sem_t				*v_mutex;
+	sem_t				*v_mutex_print;
 }						t_args;
 
 typedef struct timeval	t_day;
@@ -56,17 +60,21 @@ char					*ft_str_for_msg(size_t *v_id, char *s1,
 						const char *s2, size_t v_s2_len);
 char					*ft_join_3_ptr(char *s1, const char *s2,
 						char *s3, size_t len);
-void					*ft_start(void *args);
+void					ft_start(t_args *args);
 int						ft_print(t_args *ar, size_t v_id,
 						char *v_str, size_t v_strlen);
 size_t					ft_gettime(void);
 int						ft_eat(t_args *ar);
-int						ft_monitoring_status_philos(t_args **args);
-int						ft_free_xxx(t_args **arr_data, t_philo *arr_philos);
+void					*ft_monitoring_status_philos(void *args);
+//int						ft_free_xxx(t_args **arr_data, t_philo *arr_philos);
 
 #endif
 
-
+/*if (pthread_create(&pit, 0x0, ft_start, (void *)args[i]))
+{
+args[i]->ptr_threads = 0x0;
+return (1);
+}*/
 /*
 int main()
 {

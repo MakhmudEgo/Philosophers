@@ -12,106 +12,105 @@
 
 #include "philosophers.h"
 
-int		ft_init_args_elem(t_args **args, t_philo *arr_philos, size_t i)
+void	ft_wait(t_main *v_main)
 {
-	while (++i < arr_philos->v_philos)
-	{
-		if (!(args[i] = malloc(sizeof(t_args) * arr_philos->v_philos)))
-			return (1);
-		args[i]->ptr_philo = arr_philos;
-		args[i]->v_id = i + 1;
-		args[i]->v_last_eat = 0;
-		args[i]->v_finish = 0;
-		args[i]->v_eaten = arr_philos->v_amount_eat;
-	}
-	return (0);
-}
+	int v_return_value;
+	int v_amount_eat;
 
-int		ft_pthreads_create(t_args **args, t_philo *arr_philos, size_t i)
-{
-	pthread_t pit;
-	pthread_t **pits;
-
-	args[arr_philos->v_philos] = 0x0;
-	if (ft_init_args_elem(args, arr_philos, -1)
-		|| !(arr_philos->v_start = ft_gettime())
-		|| !(pits = malloc(sizeof(pthread_t *) * arr_philos->v_philos)))
-		return (1);
-	i = -1;
-	while (++i < arr_philos->v_philos)
+	v_amount_eat = 0;
+	while (!(0x0))
 	{
-		args[i]->v_last_eat = arr_philos->v_start;
-		if (pthread_create(&pit, 0x0, ft_start, (void *)args[i]))
+		waitpid(-1, &v_return_value, 0);
+		v_return_value = WEXITSTATUS(v_return_value);
+		if (v_return_value == 12)
+			v_amount_eat++;
+		else
 		{
-			args[i]->ptr_threads = 0x0;
-			return (1);
+			v_amount_eat |= v_amount_eat;
+			while (v_main->v_pids[v_amount_eat])
+				kill(v_main->v_pids[v_amount_eat++], SIGKILL);
 		}
-		pits[i] = &pit;
-		args[i]->ptr_threads = pits;
+		if (v_amount_eat == v_main->v_philos)
+		{
+			v_amount_eat |= v_amount_eat;
+			while (v_main->v_pids[v_amount_eat])
+				kill(v_main->v_pids[v_amount_eat++], SIGKILL);
+			exit(0);
+		}
 	}
-	ft_monitoring_status_philos(args);
-	if (arr_philos->v_dead)
-		ft_print(args[0], args[0]->ptr_philo->v_dead, DEAD_TXT, DEAD_LEN);
+}
+
+int		ft_pids_create(t_main *v_main, t_args *v_data)
+{
+	int i;
+
+	if (!(v_data->v_start = ft_gettime()))
+		return (1);
+	v_data->v_last_eat = v_data->v_start;
+	i = -1;
+	while (++i < v_data->v_philos)
+	{
+		v_main->v_pids[i] = fork();
+		if (v_main->v_pids[i] == 0)
+		{
+//			sem_wait()
+			v_data->v_id = i + 1;
+			ft_start(v_data);
+			exit(0);
+		}
+		else if (v_main->v_pids[i] > 0)
+		{
+			//atec
+		}
+		else //kill
+			write(1, "no good\n", 8);
+		//ft_start
+	}
+	ft_wait(v_main);
 	return (0);
 }
 
-int		ft_init_args(char **argv, t_philo *arr_philos)
+int		ft_init_args(char **argv, t_main *v_main, t_args *v_data)
 {
-	arr_philos->v_philos = ft_atoi(argv[1]);
-	arr_philos->v_die = ft_atoi(argv[2]);
-	arr_philos->v_eat = ft_atoi(argv[3]);
-	arr_philos->v_sleep = ft_atoi(argv[4]);
-	arr_philos->v_amount_eat = argv[5] ? ft_atoi(argv[5]) : 0;
-	arr_philos->v_is_eat = argv[5] ? 1 : 0;
-	arr_philos->v_stop = 0x0;
-	arr_philos->v_start = 0x0;
-	arr_philos->v_dead = 0x0;
-	if ((arr_philos->v_philos <= 0) ||
-	(arr_philos->v_pids = malloc(sizeof(pid_t) * (arr_philos->v_philos + 1))))
+	v_data->v_philos = ft_atoi(argv[1]);
+	v_data->v_die = ft_atoi(argv[2]);
+	v_data->v_eat = ft_atoi(argv[3]);
+	v_data->v_sleep = ft_atoi(argv[4]);
+	v_data->v_amount_eat = argv[5] ? ft_atoi(argv[5]) : 0;
+	v_data->v_is_eat = argv[5] ? 1 : 0;
+	v_data->v_stop = 0x0;
+	v_data->v_start = 0x0;
+	v_data->v_dead = 0x0;
+	v_data->v_last_eat = 0x0;
+	v_data->v_finish = 0x0;
+	v_data->v_eaten = v_data->v_amount_eat;
+	v_data->v_eat = 0x0;
+	v_main->v_philos = v_data->v_philos;
+	if ((v_data->v_philos <= 0) ||
+	!(v_main->v_pids = malloc(sizeof(pid_t) * (v_data->v_philos + 1))))
 		return (1);
+	v_main->v_pids[v_data->v_philos] = 0x0;
 	sem_unlink(SEMEAT);
 	sem_unlink(SEMPRINT);
-	arr_philos->v_mutex =
-			sem_open(SEMEAT, O_CREAT, S_IWUSR, arr_philos->v_philos);
-	arr_philos->v_mutex_print =
+	v_data->v_mutex =
+			sem_open(SEMEAT, O_CREAT, S_IWUSR, v_data->v_philos);
+	g_dead =
 			sem_open(SEMEAT, O_CREAT, S_IWUSR, 1);
 	return (0);
 }
 
-/*int		ft_free_xxx(t_args **arr_data, t_philo *arr_philos)
-{
-	size_t i;
-
-	i = -1;
-	sem_close(arr_philos->v_mutex);
-	if (arr_data)
-	{
-		free(arr_data[0]->ptr_threads);
-		usleep(2000);
-		if (arr_philos->v_dead)
-			ft_print(arr_data[0], arr_philos->v_dead, DEAD_TXT, DEAD_LEN);
-		while (++i < arr_philos->v_philos)
-			free(arr_data[i]);
-	}
-	free(arr_philos);
-	free(arr_data);
-	return (0);
-}*/
-
 int		main(int argc, char **argv)
 {
-	t_args	**arr_data;
-	t_philo	*arr_philos;
+	t_main	v_main;
+	t_args	*v_data;
 
 	if (argc < 5 || argc > 6)
 	{
 		write(1, "bad args\n", 9);
 		return (1);
 	}
-	if (!(arr_philos = malloc(sizeof(t_philo)))
-	|| ft_init_args(argv, arr_philos))
+	if (!(v_data = malloc(sizeof(t_args))) || ft_init_args(argv, &v_main, v_data))
 		return (1);
-	if ((arr_data = malloc(sizeof(t_args *) * (arr_philos->v_philos + 1))))
-		ft_pthreads_create(arr_data, arr_philos, -1);
-	return (ft_free_xxx(arr_data, arr_philos));
+	ft_pids_create(&v_main, v_data);
+//	return (ft_free_xxx(v_data, arr_philos));
 }

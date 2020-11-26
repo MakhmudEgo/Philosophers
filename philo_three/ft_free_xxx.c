@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
+/*
 static void	ft_is_stop_pthreads(t_args **arr_data, t_philo *arr_philos)
 {
 	size_t i;
@@ -46,4 +46,4 @@ int			ft_free_xxx(t_args **arr_data, t_philo *arr_philos)
 	free(arr_philos);
 	free(arr_data);
 	return (0);
-}
+}*/
