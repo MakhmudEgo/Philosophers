@@ -66,17 +66,18 @@ int		ft_eat(t_args *ar)
 
 int		ft_monitoring_status_philos(t_args **args)
 {
-	size_t		i;
-	long long	v_time_now;
+	size_t	i;
+	size_t	v_time_now;
+	size_t	v_last_eat;
 
 	while (!(0x0))
 	{
 		i = 0;
-		v_time_now = (long long)ft_gettime();
 		while (i < args[0]->ptr_philo->v_philos)
 		{
-			if (((v_time_now - args[i]->v_last_eat)
-			> args[0]->ptr_philo->v_die))
+			v_last_eat = args[i]->v_last_eat;
+			v_time_now = ft_gettime();
+			if (v_time_now - v_last_eat > args[0]->ptr_philo->v_die)
 			{
 				args[0]->ptr_philo->v_stop = i + 1;
 				if (!(args[0]->ptr_philo->v_is_eat && !args[i]->v_eaten))

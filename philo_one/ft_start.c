@@ -44,15 +44,12 @@ void		*ft_start(void *args)
 	ar = (t_args *)args;
 	l = ar->v_id - 1;
 	r = ar->v_id == ar->ptr_philo->v_philos ? 0 : ar->v_id;
-	if (ar->v_id % 2 != 0)
-		usleep(100);
+	if (ar->v_id % 2 == 0)
+		usleep(49);
 	while (!(ar->ptr_philo->v_stop))
 	{
 		if ((ar->ptr_philo->v_is_eat && !ar->v_eaten) || ar->ptr_philo->v_stop)
-		{
-			ar->ptr_philo->v_stop = 13;
 			break ;
-		}
 		if (!ar->ptr_philo->v_stop && ft_work(ar, l, r))
 			return ((void *)1);
 	}

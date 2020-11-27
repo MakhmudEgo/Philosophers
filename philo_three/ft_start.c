@@ -45,8 +45,6 @@ void		ft_start(t_args *ar)
 	if (pthread_create(&ar->v_pit, 0x0,
 	ft_monitoring_status_philos, (void *)ar))
 		exit(13);
-	if (ar->v_id % 2 == 0)
-		usleep(100);
 	while (!(0x0))
 	{
 		if (ar->v_is_eat && !ar->v_eaten)
