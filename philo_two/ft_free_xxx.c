@@ -36,7 +36,10 @@ int			ft_free_xxx(t_args **arr_data, t_philo *arr_philos)
 
 	ft_is_stop_pthreads(arr_data, arr_philos);
 	i = -1;
+	sem_unlink(SEMEAT);
+	sem_unlink(SEMPRINT);
 	sem_close(arr_philos->v_mutex);
+	sem_close(arr_philos->v_mutex_print);
 	if (arr_data)
 	{
 		free(arr_data[0]->ptr_threads);

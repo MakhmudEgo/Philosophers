@@ -14,8 +14,8 @@
 
 void	ft_wait(t_main *v_main)
 {
-	int v_return_value;
-	int v_amount_eat;
+	int		v_return_value;
+	size_t	v_amount_eat;
 
 	v_amount_eat = 0;
 	while (!(0x0))
@@ -26,13 +26,14 @@ void	ft_wait(t_main *v_main)
 			v_amount_eat++;
 		else
 		{
-			v_amount_eat |= v_amount_eat;
+			v_amount_eat &= (size_t)0;
 			while (v_main->v_pids[v_amount_eat])
 				kill(v_main->v_pids[v_amount_eat++], SIGKILL);
+			exit(13);
 		}
 		if (v_amount_eat == v_main->v_philos)
 		{
-			v_amount_eat |= v_amount_eat;
+			v_amount_eat &= (size_t)0;
 			while (v_main->v_pids[v_amount_eat])
 				kill(v_main->v_pids[v_amount_eat++], SIGKILL);
 			exit(0);
@@ -48,23 +49,21 @@ int		ft_pids_create(t_main *v_main, t_args *v_data)
 		return (1);
 	v_data->v_last_eat = v_data->v_start;
 	i = -1;
-	while (++i < v_data->v_philos)
+	while (++i < (int)v_data->v_philos)
 	{
 		v_main->v_pids[i] = fork();
 		if (v_main->v_pids[i] == 0)
 		{
-//			sem_wait()
 			v_data->v_id = i + 1;
 			ft_start(v_data);
 			exit(0);
 		}
-		else if (v_main->v_pids[i] > 0)
+		else if (v_main->v_pids[i] < 0)
 		{
-			//atec
+			while (i != -1 && v_main->v_pids[i])
+				kill(v_main->v_pids[i--], SIGKILL);
+			exit(13);
 		}
-		else //kill
-			write(1, "no good\n", 8);
-		//ft_start
 	}
 	ft_wait(v_main);
 	return (0);
@@ -82,9 +81,7 @@ int		ft_init_args(char **argv, t_main *v_main, t_args *v_data)
 	v_data->v_start = 0x0;
 	v_data->v_dead = 0x0;
 	v_data->v_last_eat = 0x0;
-	v_data->v_finish = 0x0;
 	v_data->v_eaten = v_data->v_amount_eat;
-	v_data->v_eat = 0x0;
 	v_main->v_philos = v_data->v_philos;
 	if ((v_data->v_philos <= 0) ||
 	!(v_main->v_pids = malloc(sizeof(pid_t) * (v_data->v_philos + 1))))
@@ -94,8 +91,8 @@ int		ft_init_args(char **argv, t_main *v_main, t_args *v_data)
 	sem_unlink(SEMPRINT);
 	v_data->v_mutex =
 			sem_open(SEMEAT, O_CREAT, S_IWUSR, v_data->v_philos);
-	g_dead =
-			sem_open(SEMEAT, O_CREAT, S_IWUSR, 1);
+	v_data->v_mutex_print =
+			sem_open(SEMPRINT, O_CREAT, S_IWUSR, 1);
 	return (0);
 }
 
@@ -109,8 +106,9 @@ int		main(int argc, char **argv)
 		write(1, "bad args\n", 9);
 		return (1);
 	}
-	if (!(v_data = malloc(sizeof(t_args))) || ft_init_args(argv, &v_main, v_data))
-		return (1);
+	if (!(v_data = malloc(sizeof(t_args)))
+	|| ft_init_args(argv, &v_main, v_data))
+		exit(1);
 	ft_pids_create(&v_main, v_data);
-//	return (ft_free_xxx(v_data, arr_philos));
+	return (ft_free_xxx(&v_main, v_data));
 }

@@ -17,18 +17,18 @@ all:
 	rm		-rfv philo_one/philo_one.dSYM \
 				philo_two/philo_two.dSYM \
 				philo_three/philo_three.dSYM \
-				1 2 3
+				p1 p2 p3
 
 
 1:
 	make	-C philo_one
-	mv		./philo_one/philo_one ./1
+	mv		./philo_one/philo_one ./p1
 2:
 	make	-C philo_two
-	mv		./philo_two/philo_two ./2
+	mv		./philo_two/philo_two ./p2
 3:
 	make	-C philo_three
-	mv		./philo_three/philo_three ./3
+	mv		./philo_three/philo_three ./p3
 123: 1 2 3
 
 

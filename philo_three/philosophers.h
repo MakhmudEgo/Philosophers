@@ -21,16 +21,13 @@
 # include <string.h>
 # include <semaphore.h>
 # include <sys/stat.h>
-#include <signal.h>
-
-sem_t *g_dead;
+# include <signal.h>
 
 typedef struct			s_main
 {
 	pid_t				*v_pids;
 	size_t				v_philos;
 }						t_main;
-
 
 typedef struct			s_args
 {
@@ -43,7 +40,6 @@ typedef struct			s_args
 	size_t				v_start;
 	size_t				v_dead;
 	size_t				v_last_eat;
-	size_t				v_finish;
 	size_t				v_eaten;
 	size_t				v_eat;
 	size_t				v_id;
@@ -66,43 +62,6 @@ int						ft_print(t_args *ar, size_t v_id,
 size_t					ft_gettime(void);
 int						ft_eat(t_args *ar);
 void					*ft_monitoring_status_philos(void *args);
-//int						ft_free_xxx(t_args **arr_data, t_philo *arr_philos);
+int						ft_free_xxx(t_main *v_main, t_args *v_data);
 
 #endif
-
-/*if (pthread_create(&pit, 0x0, ft_start, (void *)args[i]))
-{
-args[i]->ptr_threads = 0x0;
-return (1);
-}*/
-/*
-int main()
-{
-	pid_t *hello = malloc(sizeof(pid_t) * 4);
-	int i = 0;
-	int status = 0;
-
-	while (i < 4)
-	{
-		hello[i] = fork();
-		WEXITSTATUS(status);//
-		if (hello[i] == 0)
-		{
-			printf("doch` - %d\n", hello[i]);
-			while (1)
-				5&4;
-		}
-		else if (hello > 0)
-		{
-			printf("roditel`, no znach potomka - %d\n", hello[i]);
-			i++;
-		}
-		else
-			exit(10);
-	}
-	while (1)
-		6&6;
-
-	return 0;//
-}
-*/

@@ -80,7 +80,7 @@ int		ft_init_args(char **argv, t_philo *arr_philos)
 	arr_philos->v_stop = 0x0;
 	arr_philos->v_start = 0x0;
 	arr_philos->v_dead = 0x0;
-	if ((arr_philos->v_philos <= 0) || !(arr_philos->ptr_mutex =
+	if ((arr_philos->v_philos < 2) || !(arr_philos->ptr_mutex =
 			malloc(sizeof(pthread_mutex_t *) * (arr_philos->v_philos + 1))))
 		return (1);
 	arr_philos->ptr_mutex[arr_philos->v_philos] = 0x0;
