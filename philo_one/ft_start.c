@@ -45,7 +45,7 @@ void		*ft_start(void *args)
 	l = ar->v_id - 1;
 	r = ar->v_id == ar->ptr_philo->v_philos ? 0 : ar->v_id;
 	if (ar->v_id % 2 == 0)
-		usleep(49);
+		usleep(100);
 	while (!(ar->ptr_philo->v_stop))
 	{
 		if ((ar->ptr_philo->v_is_eat && !ar->v_eaten) || ar->ptr_philo->v_stop)

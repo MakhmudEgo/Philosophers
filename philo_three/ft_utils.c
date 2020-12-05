@@ -70,7 +70,6 @@ void	*ft_monitoring_status_philos(void *args)
 	ar = (t_args *)args;
 	while (!(0x0))
 	{
-		usleep(21);
 		v_time_now = (long long)ft_gettime();
 		if (((v_time_now - ar->v_last_eat)
 		> ar->v_die))
