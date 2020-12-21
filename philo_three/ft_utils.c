@@ -64,14 +64,13 @@ int		ft_eat(t_args *ar)
 
 void	*ft_monitoring_status_philos(void *args)
 {
-	long long	v_time_now;
 	t_args		*ar;
 
 	ar = (t_args *)args;
 	while (!(0x0))
 	{
-		v_time_now = (long long)ft_gettime();
-		if (((v_time_now - ar->v_last_eat)
+		usleep(21);
+		if ((((long long)ft_gettime() - ar->v_last_eat)
 		> ar->v_die))
 		{
 			if (!(ar->v_is_eat && !ar->v_eaten))
