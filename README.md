@@ -1,0 +1,3 @@
+# Philosophers
+
+[DEPRECATED] – new Norm
